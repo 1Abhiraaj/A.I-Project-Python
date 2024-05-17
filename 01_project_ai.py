@@ -71,6 +71,11 @@ if __name__ == "__main__":
         if 1:
             query = takeCommand()#Converting user query into lower case
             #Logic for executing tasks based on query
+            
+            if "stop" in query or "bye" in query or "quit" in query:
+                speak("Goodbye Sir, have a nice day!")
+                break
+            
             sites = [["youtube", "https://www.youtube.com"], ["wikipedia", "https://www.wikipedia.com"], ["google", "https://www.google.com"],]
             for site in sites:
                 if f"Open {site[0]}".lower() in query.lower():
@@ -120,18 +125,6 @@ if __name__ == "__main__":
                     print(e)
                     speak("Sorry, I couldn't open the camera.")
         
-                
-                    
-                
-                            
-                            
-                            
-                            
-                    
-
-
-                        
-                        
-                        
-                        
-                
+            
+            
+            
