@@ -1,17 +1,17 @@
 import pyttsx3
 import speech_recognition as sr
 import datetime
+import pywhatkit
 import wikipedia
 import webbrowser
 import os
 import random
 import smtplib
 
-engine = pyttsx3.init('sapi5')#The Speech Application Programming Interface or SAPI is an API developed by Microsoft to allow the use of speech recognition
-                               #and speech synthesis within Windows applications.
-voices = engine.getProperty('voices')#api voices are approched
-#print(voices[0].id)# printed the api voice of david
+engine = pyttsx3.init('sapi5')#The Speech Application Programming Interface or SAPI is an API developed by Microsoft to allow the use of speech recognition and speech synthesis within Windows applications.
+voices = engine.getProperty('voices')#api voices are approched print(voices[0].id)# printed the api voice of david
 engine.setProperty('voice', voices[0].id)
+engine.setProperty('rate', 250)
 
 def speak(audio):# argumrnt provided to speak the camond 
     engine.say(audio)
@@ -37,8 +37,8 @@ def takeCommand():
     r = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
-        r.pause_threshold = 0.5 #seconds of non-speaking audio before a phrese is considerd complete and many threshold to be seen
-        r.energy_threshold = 300# minimum audio energy to consider for recording
+        r.pause_threshold = 1 #seconds of non-speaking audio before a phrese is considerd complete and many threshold to be seen
+        r.energy_threshold = 200# minimum audio energy to consider for recording
         audio = r.listen(source)#  Records a single phrase from ``source`` (an ``AudioSource`` instance) into an ``AudioData`` instance, which it returns.
 
         try:
@@ -75,29 +75,48 @@ if __name__ == "__main__":
             if "stop" in query or "bye" in query or "quit" in query:
                 speak("Goodbye Sir, have a nice day!")
                 break
-            
-            sites = [["youtube", "https://www.youtube.com"], ["wikipedia", "https://www.wikipedia.com"], ["google", "https://www.google.com"],]
+           
+            sites = [["YouTube", "https://www.youtube.com"], ["GitHub", "https://www.github.com"], ["Google", "https://www.google.com"],]
             for site in sites:
                 if f"Open {site[0]}".lower() in query.lower():
                     say(f"Opening {site[0]} sir...")
                     webbrowser.open(site[1])
-                    
+                    speak("Opening Sir")
+            
+            def searchGoogle(query):
+                if "google" in query:
+                    import wikipedia as googleScrap
+                    query = query.replace("jarvis","")
+                    query = query.replace("google search","")
+                    query = query.replace("google","")
+                    speak("This is what I found on google")
+
+                    try:
+                        pywhatkit.search(query)
+                        result = googleScrap.summary(query,1)
+                        speak(result)
+
+                    except:
+                        speak("No speakable output available")
+
+            def searchYoutube(query):
+                if "youtube" in query:
+                    speak("This is what I found for your search!") 
+                    query = query.replace("youtube search","")
+                    query = query.replace("youtube","")
+                    query = query.replace("jarvis","")
+                    web  = "https://www.youtube.com/results?search_query=" + query
+                    webbrowser.open(web)
+                    pywhatkit.playonyt(query)
+                    speak("Done, Sir")
+                
             if 'wikipedia' in query: #if wikipedia found in the query then this block will be executed
-                speak('Searching Wikipedia....')
+                speak('Searching fROMWikipedia....')
                 query = query.replace("wikipedia", "  ")
                 results = wikipedia.summary(query, sentences=2)
                 speak("According to wikipedia")
                 print(results)
                 speak(results)
-                
-            elif 'open stackoverflow' in query:
-                webbrowser.open("atackoverflow.com")
-                speak("Opening sir")
-
-            elif 'open MDN web' in query:
-                webbrowser.open("developer.mozilla.org")
-                speak("Opening sir")
-
             
             elif 'play music' in query:
                 music_dir = 'F:\SONG\A FOLDER'
