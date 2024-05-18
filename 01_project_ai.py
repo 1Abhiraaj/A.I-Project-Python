@@ -38,7 +38,7 @@ def takeCommand():
     with sr.Microphone() as source:
         print("Listening...")
         r.pause_threshold = 1 #seconds of non-speaking audio before a phrese is considerd complete and many threshold to be seen
-        r.energy_threshold = 200# minimum audio energy to consider for recording
+        r.energy_threshold = 150# minimum audio energy to consider for recording
         audio = r.listen(source)#  Records a single phrase from ``source`` (an ``AudioSource`` instance) into an ``AudioData`` instance, which it returns.
 
         try:
@@ -51,16 +51,6 @@ def takeCommand():
             print("Say that againg please... ")#Say that again will be printed in case of improper voice 
             return "None"#User query will be printed.
         return query
-
-def sendEmail(to, content):
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.ehlo()
-    server.starttls()
-    server.login('email abch', 'psw xya')
-    server.sendmail('youyemail@gmail.com', to , content)
-    server.close()
-    
-
     
 if __name__ == "__main__":
     print('Welcome to Jarvis A.I')
@@ -82,34 +72,7 @@ if __name__ == "__main__":
                     say(f"Opening {site[0]} sir...")
                     webbrowser.open(site[1])
                     speak("Opening Sir")
-            
-            def searchGoogle(query):
-                if "google" in query:
-                    import wikipedia as googleScrap
-                    query = query.replace("jarvis","")
-                    query = query.replace("google search","")
-                    query = query.replace("google","")
-                    speak("This is what I found on google")
-
-                    try:
-                        pywhatkit.search(query)
-                        result = googleScrap.summary(query,1)
-                        speak(result)
-
-                    except:
-                        speak("No speakable output available")
-
-            def searchYoutube(query):
-                if "youtube" in query:
-                    speak("This is what I found for your search!") 
-                    query = query.replace("youtube search","")
-                    query = query.replace("youtube","")
-                    query = query.replace("jarvis","")
-                    web  = "https://www.youtube.com/results?search_query=" + query
-                    webbrowser.open(web)
-                    pywhatkit.playonyt(query)
-                    speak("Done, Sir")
-                
+      
             if 'wikipedia' in query: #if wikipedia found in the query then this block will be executed
                 speak('Searching fROMWikipedia....')
                 query = query.replace("wikipedia", "  ")
@@ -117,7 +80,23 @@ if __name__ == "__main__":
                 speak("According to wikipedia")
                 print(results)
                 speak(results)
-            
+                
+            elif 'search Google' in query:
+                    speak("What should I search ? ")
+                    qry = takeCommand().lower()
+                    url = f"https://www.google.com/search?q={qry}"
+                    speak(f"Searching Google for {qry}")
+                    webbrowser.open(url)
+                                
+            elif 'search youtube' in query:
+                speak("What should I search for on YouTube?")
+                qry = takeCommand().lower()
+                url = f"https://www.youtube.com/results?search_query={qry}"
+                speak(f"Searching YouTube for {qry}")
+                webbrowser.open(url)
+                pywhatkit.playonyt(qry)
+                speak("Here are the results, Sir")
+                 
             elif 'play music' in query:
                 music_dir = 'F:\SONG\A FOLDER'
                 songs = os.listdir(music_dir)
