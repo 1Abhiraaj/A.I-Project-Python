@@ -5,15 +5,18 @@ import wikipedia
 import pywhatkit as wk
 import webbrowser
 import os
+import openai
+from config import apikey
 import pyautogui
 from time import sleep
 import random
 import smtplib
 
 engine = pyttsx3.init('sapi5')#The Speech Application Programming Interface or SAPI is an API developed by Microsoft to allow the use of speech recognition and speech synthesis within Windows applications.
+
 voices = engine.getProperty('voices')#api voices are approched print(voices[0].id)# printed the api voice of david
 engine.setProperty('voice', voices[0].id)
-engine.setProperty('rate', 250)
+engine.setProperty('rate', 200)
 
 def speak(audio):# argumrnt provided to speak the camond 
     engine.say(audio)
@@ -53,8 +56,58 @@ def takeCommand():
             print("Say that againg please... ")#Say that again will be printed in case of improper voice 
             return "None"#User query will be printed.
         return query
+
+chatStr = ""
+def chat(query):
+    global chatStr
+    print(chatStr)
+    openai.api_key = apikey
+    chatStr += f"Harry: {query}\n Jarvis: "
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        prompt= chatStr,
+        temperature=0.7,
+        max_tokens=256,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+    )
+    # todo: Wrap this inside of a  try catch block
+    say(response["choices"][0]["text"])
+    chatStr += f"{response['choices'][0]['text']}\n"
+    return response["choices"][0]["text"]
     
-dictapp = {"command prompt":"cmd","Word":"winword","Excel":"excel","Firefox":"Firefox","spyder":"spyder","PowerPoint":"powerpnt"}
+def ai(prompt):
+    openai.api_key = apikey
+    text = f"OpenAI response for Prompt: {prompt} \n *************************\n\n"
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            prompt=prompt,
+            temperature=0.7,
+            max_tokens=256,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0
+        )
+        # todo: Wrap this inside of a  try catch block
+        # print(response["choices"][0]["text"])
+        text += response["choices"][0]["text"]
+    except openai.error.OpenAIError as e:
+        text += f"\nError: {str(e)}"
+        
+    if not os.path.exists("Openai"):
+        os.mkdir("Openai")
+
+    # with open(f"Openai/prompt- {random.randint(1, 2343434356)}", "w") as f:
+    with open(f"Openai/{''.join(prompt.split('intelligence')[1:]).strip() }.txt", "w") as f:
+        f.write(text)
+    
+    return text
+
+#todo: add more app
+dictapp = {"command prompt":"cmd","Word":"winword", "file explorer":"fileexp","media player":"wmplayer","task manager":"taskmgr","Excel":"excel","Firefox":"Firefox","spyder":"spyder","PowerPoint":"powerpnt"}
     
 def openappweb(query):
     
@@ -111,7 +164,6 @@ def closeappweb(query):
     
 if __name__ == "__main__":
     print('Welcome to Jarvis A.I')
-    say("Jarvis A.I")
     Wishme()
     takeCommand()
     while True:
@@ -122,7 +174,7 @@ if __name__ == "__main__":
             if "stop" in query or "bye" in query or "quit" in query:
                 speak("Goodbye Sir, have a nice day!")
                 break
-           
+            #todo: add more website
             sites = [["just YouTube", "https://www.youtube.com"], ["GitHub", "https://www.github.com"], ["just Google", "https://www.google.com"], ["Online GDB", "https://www.onlinegdb.com/"]]
             for site in sites:
                 if f"Open {site[0]}".lower() in query.lower():
@@ -166,7 +218,7 @@ if __name__ == "__main__":
                 # Use random.choice() to select a random song from the list
                 random_song = random.choice(songs)
                 os.startfile(os.path.join(music_dir, random_song))
-                speak("Opening sir")
+                speak(f"Playing {random_song}")
             
             elif 'the time' in query:
                 strTime = datetime.datetime.now().strftime("%H:%M:%S")
@@ -179,6 +231,20 @@ if __name__ == "__main__":
                 except Exception as e:
                     print(e)
                     speak("Sorry, I couldn't open the camera.")
+            
+            elif "using artificial intelligence" in query:
+                ai(prompt=query)
+                speak("Doing sir")
+                
+            elif "Jarvis Quit".lower() in query.lower():
+                exit()
+
+            elif "reset chat".lower() in query.lower():
+                chatStr = ""
+
+            else:
+                print("Chatting...")
+                chat(query)
         
             
             
