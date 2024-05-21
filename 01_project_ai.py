@@ -5,15 +5,18 @@ import wikipedia
 import pywhatkit as wk
 import webbrowser
 import os
-import openai
-from config import apikey
-import pyautogui
+# import openai
+# from config import apikey
+import pyautogui as pi
+import time
 from time import sleep
 import random
-import smtplib
+from web import webProject
+# import cv2
+import sys
+
 
 engine = pyttsx3.init('sapi5')#The Speech Application Programming Interface or SAPI is an API developed by Microsoft to allow the use of speech recognition and speech synthesis within Windows applications.
-
 voices = engine.getProperty('voices')#api voices are approched print(voices[0].id)# printed the api voice of david
 engine.setProperty('voice', voices[0].id)
 engine.setProperty('rate', 200)
@@ -57,57 +60,57 @@ def takeCommand():
             return "None"#User query will be printed.
         return query
 
-chatStr = ""
-def chat(query):
-    global chatStr
-    print(chatStr)
-    openai.api_key = apikey
-    chatStr += f"Harry: {query}\n Jarvis: "
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        prompt= chatStr,
-        temperature=0.7,
-        max_tokens=256,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-    )
-    # todo: Wrap this inside of a  try catch block
-    say(response["choices"][0]["text"])
-    chatStr += f"{response['choices'][0]['text']}\n"
-    return response["choices"][0]["text"]
+# chatStr = ""
+# def chat(query):
+#     global chatStr
+#     print(chatStr)
+#     openai.api_key = apikey
+#     chatStr += f"Harry: {query}\n Jarvis: "
+#     response = openai.ChatCompletion.create(
+#         model="gpt-3.5-turbo",
+#         prompt= chatStr,
+#         temperature=0.7,
+#         max_tokens=256,
+#         top_p=1,
+#         frequency_penalty=0,
+#         presence_penalty=0
+#     )
+#     # todo: Wrap this inside of a  try catch block
+#     say(response["choices"][0]["text"])
+#     chatStr += f"{response['choices'][0]['text']}\n"
+#     return response["choices"][0]["text"]
     
-def ai(prompt):
-    openai.api_key = apikey
-    text = f"OpenAI response for Prompt: {prompt} \n *************************\n\n"
+# def ai(prompt):
+#     openai.api_key = apikey
+#     text = f"OpenAI response for Prompt: {prompt} \n *************************\n\n"
 
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            prompt=prompt,
-            temperature=0.7,
-            max_tokens=256,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0
-        )
-        # todo: Wrap this inside of a  try catch block
-        # print(response["choices"][0]["text"])
-        text += response["choices"][0]["text"]
-    except openai.error.OpenAIError as e:
-        text += f"\nError: {str(e)}"
+#     try:
+#         response = openai.ChatCompletion.create(
+#             model="gpt-3.5-turbo",
+#             prompt=prompt,
+#             temperature=0.7,
+#             max_tokens=256,
+#             top_p=1,
+#             frequency_penalty=0,
+#             presence_penalty=0
+#         )
+#         # todo: Wrap this inside of a  try catch block
+#         # print(response["choices"][0]["text"])
+#         text += response["choices"][0]["text"]
+#     except openai.error.OpenAIError as e:
+#         text += f"\nError: {str(e)}"
         
-    if not os.path.exists("Openai"):
-        os.mkdir("Openai")
+#     if not os.path.exists("Openai"):
+#         os.mkdir("Openai")
 
-    # with open(f"Openai/prompt- {random.randint(1, 2343434356)}", "w") as f:
-    with open(f"Openai/{''.join(prompt.split('intelligence')[1:]).strip() }.txt", "w") as f:
-        f.write(text)
+#     # with open(f"Openai/prompt- {random.randint(1, 2343434356)}", "w") as f:
+#     with open(f"Openai/{''.join(prompt.split('intelligence')[1:]).strip() }.txt", "w") as f:
+#         f.write(text)
     
-    return text
+#     return text
 
 #todo: add more app
-dictapp = {"command prompt":"cmd","Word":"winword", "file explorer":"fileexp","media player":"wmplayer","task manager":"taskmgr","Excel":"excel","Firefox":"Firefox","spyder":"spyder","PowerPoint":"powerpnt"}
+dictapp = {"command prompt":"cmd","Word":"winword", "file explorer":"fileexp","media player":"wmplayer","task manager":"taskmgr","Excel":"excel","PowerPoint":"powerpnt"}
     
 def openappweb(query):
     
@@ -133,22 +136,22 @@ def openappweb(query):
 def closeappweb(query):
     speak("Closing, sir")
     if "one tab" in query or "1 tab" in query:
-        pyautogui.hotkey("ctrl", "w")
+        pi.hotkey("ctrl", "w")
     elif "2 tab" in query:
         for _ in range(2):
-            pyautogui.hotkey("ctrl", "w")
+            pi.hotkey("ctrl", "w")
             sleep(0.5)
     elif "3 tab" in query:
         for _ in range(3):
-            pyautogui.hotkey("ctrl", "w")
+            pi.hotkey("ctrl", "w")
             sleep(0.5)
     elif "4 tab" in query:
         for _ in range(4):
-            pyautogui.hotkey("ctrl", "w")
+            pi.hotkey("ctrl", "w")
             sleep(0.5)
     elif "5 tab" in query:
         for _ in range(5):
-            pyautogui.hotkey("ctrl", "w")
+            pi.hotkey("ctrl", "w")
             sleep(0.5)
     else:
         keys = list(dictapp.keys())
@@ -172,32 +175,33 @@ if __name__ == "__main__":
             #Logic for executing tasks based on query
             
             if "stop" in query or "bye" in query or "quit" in query:
+                print("Goodbye Sir, have a nice day!")
                 speak("Goodbye Sir, have a nice day!")
                 break
             #todo: add more website
-            sites = [["just YouTube", "https://www.youtube.com"], ["GitHub", "https://www.github.com"], ["just Google", "https://www.google.com"], ["Online GDB", "https://www.onlinegdb.com/"]]
+            sites = [["open YouTube", "https://www.youtube.com"], [" open GitHub", "https://www.github.com"], [" open Google", "https://www.google.com"], ["Online GDB", "https://www.onlinegdb.com/"]]
             for site in sites:
-                if f"Open {site[0]}".lower() in query.lower():
+                if f"open {site[0]}".lower() in query.lower():
                     say(f"Opening {site[0]} sir...")
                     webbrowser.open(site[1])
                     speak("Opening Sir")
       
-            if 'wikipedia' in query: #if wikipedia found in the query then this block will be executed
+            if 'Wikipedia' in query: #if wikipedia found in the query then this block will be executed
                 speak('Searching fROMWikipedia....')
                 query = query.replace("wikipedia", "  ")
-                results = wikipedia.summary(query, sentences=2)
+                results = wikipedia.summary(query, sentences=10)
                 speak("According to wikipedia")
                 print(results)
                 speak(results)
                 
-            elif 'open Google' in query:
+            elif 'Google search' in query:
                     speak("What should I search ? ")
                     qry = takeCommand().lower()
                     url = f"https://www.google.com/search?q={qry}"
                     speak(f"Searching Google for {qry}")
                     webbrowser.open(url)
                                 
-            elif 'open YouTube' in query:
+            elif 'YouTube search' in query:
                 speak("What should I search for on YouTube?")
                 qry = takeCommand().lower()
                 url = f"https://www.youtube.com/results?search_query={qry}"
@@ -205,12 +209,15 @@ if __name__ == "__main__":
                 webbrowser.open(url)
                 wk.playonyt(qry)
                 speak("Here are the results, Sir")
-            
+             
             elif "open" in query:
                 openappweb(query)
             elif "close" in query:
                 closeappweb(query)
-            
+                
+            elif "open web project" in query:
+                webProject()
+
             elif 'play music' in query:
                 music_dir = 'F:\SONG\A FOLDER'
                 songs = os.listdir(music_dir)
@@ -220,10 +227,39 @@ if __name__ == "__main__":
                 os.startfile(os.path.join(music_dir, random_song))
                 speak(f"Playing {random_song}")
             
+            elif 'volume up' in query:
+                for _ in range(15):
+                    pi.press("volumeup")
+            
+            elif 'volume down' in query:
+                for _ in range(15):
+                    pi.press("volumedown")
+                
+            elif "mute" in query or "unmute" in query:
+                pi.press("volumemute")
+
             elif 'the time' in query:
                 strTime = datetime.datetime.now().strftime("%H:%M:%S")
                 speak(f"Sir, the time is {strTime}")
                 
+            elif "go to sleep" in query:
+                try:
+                    speak(' allright sir, I am switching off')
+                    sys.exit()
+                except Exception as e:
+                    print(e)
+                    speak("Sorry, I couldn't go to sleep.")
+            
+            elif "take a screenshot" in query:
+                pi.hotkey("win", "prtsc")
+                speak('Tell me a name for the file')
+                name = takeCommand().lower()
+                time.sleep(3)
+                img = pi.screenshot()
+                img.save(f"{name}.png")
+                speak("Screenshot saved")
+                    
+                             
             elif 'open camera' in query:
                 try:
                     os.system("start microsoft.windows.camera:")  # Command to open the camera on Windows systems
@@ -232,20 +268,19 @@ if __name__ == "__main__":
                     print(e)
                     speak("Sorry, I couldn't open the camera.")
             
-            elif "using artificial intelligence" in query:
-                ai(prompt=query)
-                speak("Doing sir")
+            # elif "using artificial intelligence" in query:
+            #     ai(prompt=query)
+            #     speak("Doing sir")
                 
-            elif "Jarvis Quit".lower() in query.lower():
-                exit()
+            # elif "Jarvis Quit".lower() in query.lower():
+            #     exit()
 
-            elif "reset chat".lower() in query.lower():
-                chatStr = ""
+            # elif "reset chat".lower() in query.lower():
+            #     chatStr = ""
 
-            else:
-                print("Chatting...")
-                chat(query)
+            # else:
+            #     print("Chatting...")
+            #     chat(query)
         
-            
-            
-            
+        
+                
